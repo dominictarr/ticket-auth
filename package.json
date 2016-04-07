@@ -1,0 +1,25 @@
+{
+  "name": "cookie-auth",
+  "description": "",
+  "version": "0.0.0",
+  "homepage": "https://github.com/dominictarr/cookie-auth",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dominictarr/cookie-auth.git"
+  },
+  "dependencies": {
+    "cookie": "^0.2.3",
+    "monotonic-timestamp": "0.0.9",
+    "pull-level": "^1.4.2"
+  },
+  "devDependencies": {
+    "level-sublevel": "^6.5.4",
+    "level-test": "^2.0.1",
+    "tape": "^4.5.1"
+  },
+  "scripts": {
+    "test": "set -e; for t in test/*.js; do node $t; done"
+  },
+  "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://dominictarr.com)",
+  "license": "MIT"
+}
