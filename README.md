@@ -2,6 +2,37 @@
 
 simple http authentication/authorization based on cookies (and no passwords)
 
+## Example
+
+``` js
+  var Level = require('level')
+  var SubLevel = require('level-sublevel')
+  var db = SubLevel(level(path, {valueEncoding: 'json'}))
+  //store tickets in a leveldb
+  var auth = Auth(db)
+
+  var server = http.createServer(require('stack')(
+
+  server.createServer(Stack(
+    Tiny.get(/^\/redeem\/([0-9a-f]+)/, function (req, res, next) {
+      api.auth.redeem(req.params[0], function (err, cookie) {
+        if(err) return next(err)
+        console.log('code redeemed', cookie)
+        res.setHeader('Set-Cookie', cookie)
+        res.setHeader('Location', '/')
+        res.statusCode = 303
+        res.end()
+      })
+    }),
+    function (req, res) {
+
+
+    })
+  ).listen(8000)
+
+
+```
+
 # notes
 
 returns a new high entropy url, associated with a resource (email address)
