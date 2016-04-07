@@ -99,8 +99,7 @@ module.exports = function (db) {
     })
   }
 
-  //since this is all in memory currently,
-  //create a resource for testing.
+  //TODO: add feature to revoke tickets and stubs.
 
   return  {
     create: create,
@@ -119,4 +118,5 @@ module.exports = function (db) {
     }
   }
 }
+
 
