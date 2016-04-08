@@ -1,11 +1,11 @@
 {
-  "name": "cookie-auth",
+  "name": "ticket-auth",
   "description": "",
   "version": "0.0.0",
-  "homepage": "https://github.com/dominictarr/cookie-auth",
+  "homepage": "https://github.com/dominictarr/ticket-auth",
   "repository": {
     "type": "git",
-    "url": "git://github.com/dominictarr/cookie-auth.git"
+    "url": "git://github.com/dominictarr/ticket-auth.git"
   },
   "dependencies": {
     "cookie": "^0.2.3",
