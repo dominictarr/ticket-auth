@@ -1,48 +1,81 @@
 # cookie-auth
 
-simple http authentication/authorization based on cookies (and no passwords)
+simple http authentication/authorization that uses cookies intsead of passwords.
+
+Works exactly like tickets do when you go to a movie theater or catch a bus.
+First you get a ticket, in the form of a url, which can be emailed to you.
+Then that ticket is _redeemed_, you request that url and a cookie is
+written with the response, like the ticket being torn when you enter
+the theater. Now that cookie shows you are authorized to use the website,
+like the ticket stub shows you are authorized to watch the movie.
 
 ## Example
 
+`ticket-auth` just encapsulates the logic around tickets,
+but doesn't handle sending the tickets to users (i.e. via email)
+
 ``` js
+  var Tickets = require('ticket-auth')
+
+  //initialize database
   var Level = require('level')
   var SubLevel = require('level-sublevel')
   var db = SubLevel(level(path, {valueEncoding: 'json'}))
-  //store tickets in a leveldb
-  var auth = Auth(db)
 
-  var server = http.createServer(require('stack')(
+  //create Tickets instance
+  var auth = Tickets(db)
 
-  server.createServer(Stack(
+  //a resource can be any string.
+  var resource = 'test resoruce'
+
+  //create a ticket to a resoruce
+  auth.create(resource, function (err, ticket) {
+    //redeem that ticket into a ticket_stub (which is a cookie)
+    auth.redeem(ticket, function (err, ticket_stub) {
+      //check which resource a ticket_stub accesses
+      auth.check(ticket_stub, function (err, _resource) {
+        assert.equal(_resource, resource)
+      })
+    })
+  })
+```
+
+here is an example of redeeming a ticket.
+
+``` js
+  var Tickets = require('ticket-auth')
+
+  //initialize database
+  var Level = require('level')
+  var SubLevel = require('level-sublevel')
+  var db = SubLevel(level(path, {valueEncoding: 'json'}))
+
+  //create Tickets instance
+  var auth = Tickets(db)
+
+  var Tiny = require('tiny-route') //router
+  var Stack = require('stack') //middleware
+
+  //here is the actual http server!
+
+  require('http').createServer(Stack(
+    //url for redeeming a ticket. /redeem/<ticket_code>
     Tiny.get(/^\/redeem\/([0-9a-f]+)/, function (req, res, next) {
       api.auth.redeem(req.params[0], function (err, cookie) {
         if(err) return next(err)
-        console.log('code redeemed', cookie)
+        //ticket is redeemed! set it as a cookie, 
         res.setHeader('Set-Cookie', cookie)
-        res.setHeader('Location', '/')
+        res.setHeader('Location', '/') //redirect to the login page.
         res.statusCode = 303
         res.end()
       })
     }),
     function (req, res) {
-
-
     })
   ).listen(8000)
-
-
 ```
 
-# notes
-
-returns a new high entropy url, associated with a resource (email address)
-
-when someone accesses that resource.
-that resource is associated with a cookie in their browser.
-(record user agent, so that it's possible to show the user
-a list of logins they currently have)
-
----
+# testing with curl
 
 note, to make curl work with cookies must set a "cookie jar"
 it seems: `-c file` sets the file to write to,
@@ -56,13 +89,8 @@ the man page says that -c should work, but it only seems to write the
 jar but not read it! once the cookie is written, you can use -b or --cookie
 
 but that doesn't make sense because there isn't even a b in cookie.
-anyway, "cookie" is one of the worst named things in the web stack.
-it's a damn ticket stub!
-nobody ever gave you a cookie with a seat number on it.
 
----
-
-What you need to know about cookies.
+## what are "cookies": crash course
 
 A cookie is always `key=value` and has "attributes"
 that tell the browser what to do. you need `Expires={date}` and `Path=/`.
@@ -73,9 +101,7 @@ and will expire after the browser exits.
 Without `Path=/` the browser will only send the cookie on the path
 that it got it from.
 
-*/
-
-## authorization
+## 
 
 Authorization uses "cookies". Cookies are something delicious you eat,
 so it really doesn't make any sense to call things used for authentication
@@ -96,7 +122,7 @@ the server creates a cookie and sends it to you in the response,
 which is also a redirect to the rest of the app (though it could easily
 be a redirect to edit your newly created profile)
 
-This is exactly like tearing off the ticket and givening you back the ticket
+This is exactly like tearing off the ticket and giving you back the ticket
 stub when you enter the theater. Possession of the ticket stub shows you are
 authorized to see the movie.
 
@@ -131,5 +157,4 @@ arguments where `jar` is the "cookie jar"
 ## License
 
 MIT
-
 
